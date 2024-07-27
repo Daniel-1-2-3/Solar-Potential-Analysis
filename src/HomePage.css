@@ -37,7 +37,7 @@ body {
   
 #blob {
     background-color: white;
-    height: 12vmax;
+    height: 10vmax;
     aspect-ratio: 1;
     position: absolute;
     left: 50%;
