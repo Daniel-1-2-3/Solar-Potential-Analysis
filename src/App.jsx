@@ -1,13 +1,11 @@
-// App.jsx
-import React from 'react';
-import TitlePage from './HomePage';
+import HomePage from './pages/HomePage'
 
 const App = () => {
   return (
-    <div>
-      <TitlePage />
-    </div>
-  );
-};
+    <>
+      <HomePage />
+    </>
+  )
+}
 
 export default App;
