@@ -46,7 +46,7 @@ const Map = () => {
   }, []);
 
   return (
-    <div className='w-3/4 flex min-h-screen p-6 bg-indigo-950'>
+    <div className='w-3/4 flex min-h-screen p-10 bg-indigo-900 rounded-3xl'>
         <div
         id="map"
         style={{ width: '100%', boxShadow: 'none'}} 
