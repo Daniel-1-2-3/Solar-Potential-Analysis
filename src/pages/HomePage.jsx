@@ -10,6 +10,7 @@ const HomePage = () => {
     const titleRef = useRef(null);
 
     useEffect(() => {
+        document.title = 'SPA: Solar Potential Analysis';
         const titleElement = titleRef.current;
         let iteration = 0;
 
