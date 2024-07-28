@@ -1,3 +1,4 @@
+import "../index.css"
 import { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
@@ -7,17 +8,18 @@ import '../assets/images/star.css'
 import { getCompletion } from './GPTDescription';
 
 const Map = () => {
-    const [radiuskm, setRadiuskm] = useState(50);
+    const [radiuskm, setRadiuskm] = useState(2);
     const [location, setLocation] = useState('');
     const [targetCoordinates, setTargetCoordinates] = useState([0, 0]); //coordinates for the country that you want to navigate to, through the sidebar button
     const [map, setMap] = useState(null);
     const [currentMarker, setCurrentMarker] = useState(null);
     const [currentCircle, setCurrentCircle] = useState(null);
+    const [scale, setScale] = useState(2)
     const [loading, setLoading] = useState(false); //state for whether it is currently making an API request
 
     // Initialize the map
     useEffect(() => {
-        const initialMap = L.map('map').setView([targetCoordinates[0], targetCoordinates[1]], 2); // coordinates for initial view
+        const initialMap = L.map('map').setView([targetCoordinates[0], targetCoordinates[1]], scale); // coordinates for initial view
 
         // Add a tile layer
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -31,7 +33,7 @@ const Map = () => {
         return () => {
             initialMap.remove();
         };
-    }, [targetCoordinates]);
+    }, [targetCoordinates, scale]);
 
     // Handle map clicks
     useEffect(() => {
@@ -55,10 +57,8 @@ const Map = () => {
 
             const radiusPx = radiuskm * 1000; //convert km to px
             const newCircle = L.circle([latitude, longitude], {
-                color: '#4b734e',
-                fillColor: '#1c5721',
-                fillOpacity: 0.5,
-                radius: radiusPx
+                className: 'leaflet-circle',
+                radius: radiusPx,
             }).addTo(map);
 
             setCurrentCircle(newCircle);
@@ -103,6 +103,7 @@ const Map = () => {
                         const state = components.state || '';
                         const country = components.country || '';
                         const locationName = `${city}${city && state ? ', ' : ''}${state}${(city || state) && country ? ', ' : ''}${country}`;
+                        
                         return locationName;
 
                     } else {
@@ -112,7 +113,6 @@ const Map = () => {
                     console.log(`Error: ${error}`);
                 }
             }
-
             
             const clickedLocation = await getClickLocation(latitude, longitude)
             const description = await chatGPTDescription(numStars, clickedLocation)
@@ -122,10 +122,10 @@ const Map = () => {
                     <div class="alert alert-primary align-items: center;" role="alert">
                         <h4>${clickedLocation}</h4>
                         <div class="alert-heading-1" >
-                            ${Array.from({ length: Math.floor(numStars) }).map((_, i) => `<img src="${star}" alt="star" width="20" height="20" />`).join('')}
-                            ${Array.from({ length: Math.round(numStars - Math.floor(numStars))}).map((_, i) => `<img src="${half}" alt="star" width="10" height="10" />`).join('')} 
+                            ${Array.from({ length: Math.floor(numStars) }).map((_, i) => `<img key=${i} src="${star}" alt="star" width="20" height="20" />`).join('')}
+                            ${Array.from({ length: Math.round(numStars - Math.floor(numStars))}).map((_, i) => `<img key=${i} src="${half}" alt="star" width="10" height="10" />`).join('')} 
                         </div>
-                        <span style="font-size: 13px; font-weight: bold; margin-top: 10px; display: block;"> Solar Panel Potential ${numStars} / 5</span>
+                        <span class="text-xs font-bold mt-2.5 block"> Solar Panel Potential ${numStars} / 5</span>
                         <hr />
                         <p class="mb-0">${description}</p>
                     </div>
@@ -160,7 +160,22 @@ const Map = () => {
                 console.log([coordinates.lat, coordinates.lng])
                 setTargetCoordinates([coordinates.lat, coordinates.lng])
             } else {
-                console.log(`No coordinates found for ${location}`);
+                window.alert(`No coordinates found for ${location}. Maybe check your spelling?`)
+            }
+
+            const components = data.results[0].components;
+            const isCity = components.city || components.town || components.village
+            const isState = components.state
+            const isCountry = components.country
+            
+            if (isCity){
+                setScale(11)
+            } else if (isState){
+                setScale(5)
+            } else if (isCountry){
+                setScale(4)
+            } else {
+                setScale(2)
             }
         } catch (error) {
             console.log(`Error: ${error}`);
@@ -172,7 +187,7 @@ const Map = () => {
             <div className="mb-12 mt-40">
                 <div>
                     <form onSubmit={locationSubmit}>
-                        <label htmlFor="location" className="block font-bold mb-2 text-white text-center items-center">Search for a location:</label>
+                        <label htmlFor="location" className="block font-bold mb-3 text-white text-center text-lg items-center">Search for a location:</label>
                         <div className='flex'>
                             <input
                                 type="text"
@@ -188,8 +203,8 @@ const Map = () => {
                         </div>
                     </form>
                 </div>
-                <div className="mb-12 mt-32">
-                    <label htmlFor="type" className="block font-bold mb-2 text-white text-center items-center">Search Area Radius</label>
+                <div className="mb-12 mt-20">
+                    <label htmlFor="type" className="block font-bold mb-3 text-white text-center text-lg items-center">Search Area Radius</label>
                     <select
                         id="type"
                         name="type"
@@ -198,6 +213,10 @@ const Map = () => {
                         value={radiuskm}
                         onChange={(event) => setRadiuskm(Number(event.target.value))}
                     >
+                        <option value={0.5}>1/2 km</option>
+                        <option value={1}>1 km</option>
+                        <option value={2}>2 km</option>
+                        <option value={3}>3 km</option>
                         <option value={5}>5 km</option>
                         <option value={10}>10 km</option>
                         <option value={50}>50 km</option>
