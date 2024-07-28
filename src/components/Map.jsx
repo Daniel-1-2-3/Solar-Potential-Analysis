@@ -98,7 +98,7 @@ const Map = () => {
 
             const getClickLocation = async (latitude, longitude) => {
                 try {
-                    const apiKey = 'e05d15f41cad4b1bb27d91931d0bbfcb';
+                    const apiKey = 'INSERT_API_KEY_HERE';
                     const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`);
                     const data = await response.json();
 
