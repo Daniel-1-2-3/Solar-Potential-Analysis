@@ -5,6 +5,7 @@ import star from '../assets/images/star.png';
 import half from '../assets/images/half.png';
 import '../assets/images/star.css'
 import { getCompletion } from './GPTDescription';
+import Spinner from './Spinner'
 
 const Map = () => {
     const [radiuskm, setRadiuskm] = useState(2);
@@ -63,7 +64,7 @@ const Map = () => {
             }).addTo(map);
 
             setCurrentCircle(newCircle);
-
+            
             console.log(latitude, longitude)
             //send the latitude and longitude to python backend for processing 
             setLoading(true); //disable clicking on other spots while processing the python api request
@@ -79,7 +80,10 @@ const Map = () => {
                 throw new Error('Network response was not ok');
             }
           
-            let solarPotentialVal = await response.json();
+            const data = await response.json();
+            const solarPotentialVal = data[0]
+            const solarIrradiance = data[1]
+            
             setLoading(false)
             console.log(solarPotentialVal)
 
@@ -109,6 +113,7 @@ const Map = () => {
 
                     } else {
                         console.log(`No location found for coordinates (${latitude}, ${longitude})`);
+                        return 'Unknown'
                     }
                 } catch (error) {
                     console.log(`Error: ${error}`);
@@ -127,6 +132,7 @@ const Map = () => {
                             ${Array.from({ length: Math.round(numStars - Math.floor(numStars))}).map((_, i) => `<img key=${i} src="${half}" alt="star" width="10" height="10" />`).join('')} 
                         </div>
                         <span style="font-size: 13px; font-weight: bold; margin-top: 10px; display: block;"> Solar Panel Potential ${numStars} / 5</span>
+                        <span style="font-size: 13px; margin-top: 10px; display: block;"> Solar Irradiance ${solarIrradiance} W/m\u00B2</span>
                         <hr />
                         <p class="mb-0">${description}</p>
                     </div>
@@ -200,16 +206,18 @@ const Map = () => {
                                 className='w-full py-2 px-4 rounded-lg border border-gray-300 text-gray-900'
                                 placeholder='Enter location'
                             />
-                            <button type="submit" className='ml-4 rounded-md py-1 px-2 bg-blue-700 text-white'>Go!</button>
+                            <button type="submit" className=' flex ml-4 rounded-md py-1 px-2 bg-blue-700 text-center items-center justify-center hover:bg-blue-800'>
+                                <p className='text-center mt-3 font-bold text-white hover:text-gray-100'>Go!</p>
+                            </button>
                         </div>
                     </form>
                 </div>
-                <div className="mb-12 mt-20">
-                    <label htmlFor="type" className="block font-bold mb-3 text-white text-center text-lg items-center">Search Area Radius</label>
+                <div className="mb-12 mt-16">
+                    <label htmlFor="type" className="block font-bold mb-3 text-white text-center text-lg items-center">Search Area Radius:</label>
                     <select
                         id="type"
                         name="type"
-                        className="border rounded w-full py-2 px-3"
+                        className="border rounded w-full py-3 px-3"
                         required
                         value={radiuskm}
                         onChange={(event) => setRadiuskm(Number(event.target.value))}
@@ -225,7 +233,8 @@ const Map = () => {
                     </select>
                 </div>
             </div>
-            <div className='rounded-lg' id="map" style={{ width: '100%', boxShadow: 'none' }}></div>
+            <div className='rounded-lg' id="map" style={{ width: '100%', boxShadow: 'none', zIndex: 0}}></div>
+            {loading ? <Spinner /> : <></>}
         </div>
     );
 };
