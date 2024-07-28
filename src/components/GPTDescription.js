@@ -1,4 +1,4 @@
-const REACT_APP_OPENAI_API_KEY = 'sk-proj-T9HzCtlIuEzllrzrk8KaT3BlbkFJzcHfSTAsZDHcNZ7lKrGJ';
+const REACT_APP_OPENAI_API_KEY = 'INSERT_API_KEY_HERE';
 
 export const getCompletion = async (numStars, location) => {
     let rating = ''
