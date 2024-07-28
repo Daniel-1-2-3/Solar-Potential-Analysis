@@ -1,4 +1,5 @@
 import Map from '../components/Map'
+import Description from "../components/Description.jsx";
 import '../index.css'
 
 const HomePage = () => {
@@ -37,8 +38,9 @@ const HomePage = () => {
                 Solar Potential Analysis
             </h1>
             <Map />
+            
         </div>
-        <div id='blob'></div>
+        <Description/>
     </div>
   );
 };
