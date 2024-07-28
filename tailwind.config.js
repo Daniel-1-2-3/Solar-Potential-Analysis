@@ -13,6 +13,9 @@ export default {
                 leafGreen: '#4b734e',
                 leafFillGreen: '#1c5721',
             },
+            width: {
+                '18rem': '18rem',
+            },
       },
   },
   plugins: [],

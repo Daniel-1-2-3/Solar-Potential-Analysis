@@ -1,11 +1,13 @@
 import "../index.css"
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
 import star from '../assets/images/star.png';
 import half from '../assets/images/half.png';
 import '../assets/images/star.css'
 import { getCompletion } from './GPTDescription';
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap/dist/js/bootstrap.bundle.min"
 
 const Map = () => {
     const [radiuskm, setRadiuskm] = useState(2);
@@ -16,7 +18,26 @@ const Map = () => {
     const [currentCircle, setCurrentCircle] = useState(null);
     const [scale, setScale] = useState(2)
     const [loading, setLoading] = useState(false); //state for whether it is currently making an API request
-
+    const Modal = () => (
+        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        ...
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" className="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
     // Initialize the map
     useEffect(() => {
         const initialMap = L.map('map').setView([targetCoordinates[0], targetCoordinates[1]], scale); // coordinates for initial view
@@ -147,7 +168,6 @@ const Map = () => {
             currentCircle.setRadius(radiuskm * 1000); // Convert km to meters
         }
     }, [radiuskm, currentCircle]);
-
     const locationSubmit = async (event) => {
         event.preventDefault();
         const apiKey = 'e05d15f41cad4b1bb27d91931d0bbfcb'; // Replace with your OpenCage API key
@@ -160,7 +180,7 @@ const Map = () => {
                 console.log([coordinates.lat, coordinates.lng])
                 setTargetCoordinates([coordinates.lat, coordinates.lng])
             } else {
-                window.alert(`No coordinates found for ${location}. Maybe check your spelling?`)
+                Modal();
             }
 
             const components = data.results[0].components;
@@ -183,49 +203,55 @@ const Map = () => {
     };
 
     return (
-        <div className='w-5/6 flex min-h-screen p-10 bg-indigo-900 rounded-3xl space-x-8'>
-            <div className="mb-12 mt-40">
-                <div>
-                    <form onSubmit={locationSubmit}>
-                        <label htmlFor="location" className="block font-bold mb-3 text-white text-center text-lg items-center">Search for a location:</label>
-                        <div className='flex'>
-                            <input
-                                type="text"
-                                id="location"
-                                name="location"
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
-                                required
-                                className='w-full py-2 px-4 rounded-lg border border-gray-300 text-gray-900'
-                                placeholder='Enter location'
-                            />
-                            <button type="submit" className='ml-4 rounded-md py-1 px-2 bg-blue-700 text-white'>Go!</button>
-                        </div>
-                    </form>
+            <div className='w-5/6 flex min-h-screen p-10 bg-indigo-900 rounded-3xl space-x-8'>
+                <div className="mb-12 mt-40">
+                    <div>
+                        <form onSubmit={locationSubmit}>
+                            <label htmlFor="location"
+                                   className="block font-bold mb-3 text-white text-center text-lg items-center">Search
+                                for a
+                                location:</label>
+                            <div className='flex'>
+                                <input
+                                    type="text"
+                                    id="location"
+                                    name="location"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    required
+                                    className='w-full py-2 px-4 rounded-lg border border-gray-300 text-gray-900'
+                                    placeholder='Enter location'
+                                />
+                                <button type="submit" className='ml-4 rounded-md py-1 px-2 bg-blue-700 text-white'>Go!
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div className="mb-12 mt-20">
+                        <label htmlFor="type"
+                               className="block font-bold mb-3 text-white text-center text-lg items-center">Search Area
+                            Radius</label>
+                        <select
+                            id="type"
+                            name="type"
+                            className="border rounded w-full py-2 px-3"
+                            required
+                            value={radiuskm}
+                            onChange={(event) => setRadiuskm(Number(event.target.value))}
+                        >
+                            <option value={0.5}>1/2 km</option>
+                            <option value={1}>1 km</option>
+                            <option value={2}>2 km</option>
+                            <option value={3}>3 km</option>
+                            <option value={5}>5 km</option>
+                            <option value={10}>10 km</option>
+                            <option value={50}>50 km</option>
+                            <option value={100}>100 km</option>
+                        </select>
+                    </div>
                 </div>
-                <div className="mb-12 mt-20">
-                    <label htmlFor="type" className="block font-bold mb-3 text-white text-center text-lg items-center">Search Area Radius</label>
-                    <select
-                        id="type"
-                        name="type"
-                        className="border rounded w-full py-2 px-3"
-                        required
-                        value={radiuskm}
-                        onChange={(event) => setRadiuskm(Number(event.target.value))}
-                    >
-                        <option value={0.5}>1/2 km</option>
-                        <option value={1}>1 km</option>
-                        <option value={2}>2 km</option>
-                        <option value={3}>3 km</option>
-                        <option value={5}>5 km</option>
-                        <option value={10}>10 km</option>
-                        <option value={50}>50 km</option>
-                        <option value={100}>100 km</option>
-                    </select>
-                </div>
+                <div className='rounded-lg' id="map" style={{width: '100%', boxShadow: 'none'}}></div>
             </div>
-            <div className='rounded-lg' id="map" style={{ width: '100%', boxShadow: 'none' }}></div>
-        </div>
     );
 };
 
