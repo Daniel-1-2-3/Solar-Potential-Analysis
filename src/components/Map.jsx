@@ -190,7 +190,7 @@ const Map = () => {
     };
 
     return (
-        <div className='w-5/6 flex min-h-screen p-10 bg-indigo-900 rounded-3xl space-x-8'>
+        <div className='w-5/6 flex min-h-screen p-10 bg-indigo-900 rounded-3xl space-x-8 mt-8'>
             <div className="mb-12 mt-40">
                 <div>
                     <form onSubmit={locationSubmit}>

@@ -9,3 +9,6 @@
     fill: theme('colors.leafFillGreen'); 
     fill-opacity: 0.5;
 }
+.title {
+    font-family: 'Space Mono', monospace;
+}
