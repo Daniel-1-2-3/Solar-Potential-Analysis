@@ -1,7 +1,7 @@
-
 import HomePage from './pages/HomePage'
 
 const App = () => {
+    
   return (
     <>
       <HomePage />
@@ -9,4 +9,4 @@ const App = () => {
   )
 }
 
-export default App
+export default App;

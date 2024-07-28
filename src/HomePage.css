@@ -1,3 +1,4 @@
+/* TitlePage.css */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
 
 .shape-fill {
@@ -36,7 +37,7 @@ body {
   
 #blob {
     background-color: white;
-    height: 10vmax;
+    height: 12vmax;
     aspect-ratio: 1;
     position: absolute;
     left: 50%;
@@ -45,6 +46,6 @@ body {
     border-radius: 50%;
     background: linear-gradient(to right, aquamarine, mediumpurple);
     animation: rotate 20s infinite;
-    opacity: 0.4;
+    opacity: 0.8;
     filter: blur(6vmax);
   }

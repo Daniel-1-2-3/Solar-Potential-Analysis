@@ -1,5 +1,6 @@
-import './HomePage.css'; // Import the CSS file for font and styles
 import Map from '../components/Map'
+import Description from "../components/Description.jsx";
+import '../index.css'
 
 const HomePage = () => {
     return (
@@ -33,28 +34,15 @@ const HomePage = () => {
         </div>
         {/* Main content */}
         <div className='flex flex-col justify-center mt-auto items-center'>
-            <h1 style={styles.title} className='flex flex-col mb-4 mt-3'>Solar Potential Analysis</h1>
+            <h1 className='flex flex-col mb-4 mt-3 text-7xl font-bold text-white my-4 text-center'>
+                Solar Potential Analysis
+            </h1>
             <Map />
+            
         </div>
-        <div id='blob'></div>
+        <Description/>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    height: '100vh',
-    backgroundColor: '#333',
-    paddingTop: '10rem',
-  },
-  title: {
-    fontFamily: 'Montserrat, sans-serif', // Use the Montserrat font
-    fontSize: '4rem',
-    color: '#ffffff',
-  },
 };
 
 export default HomePage;
