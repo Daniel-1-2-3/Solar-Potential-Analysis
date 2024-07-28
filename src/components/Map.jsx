@@ -1,3 +1,4 @@
+import "../index.css"
 import { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
@@ -55,10 +56,8 @@ const Map = () => {
 
             const radiusPx = radiuskm * 1000; //convert km to px
             const newCircle = L.circle([latitude, longitude], {
-                color: '#4b734e',
-                fillColor: '#1c5721',
-                fillOpacity: 0.5,
-                radius: radiusPx
+                className: 'leaflet-circle',
+                radius: radiusPx,
             }).addTo(map);
 
             setCurrentCircle(newCircle);
@@ -125,7 +124,7 @@ const Map = () => {
                             ${Array.from({ length: Math.floor(numStars) }).map((_, i) => `<img src="${star}" alt="star" width="20" height="20" />`).join('')}
                             ${Array.from({ length: Math.round(numStars - Math.floor(numStars))}).map((_, i) => `<img src="${half}" alt="star" width="10" height="10" />`).join('')} 
                         </div>
-                        <span style="font-size: 13px; font-weight: bold; margin-top: 10px; display: block;"> Solar Panel Potential ${numStars} / 5</span>
+                        <span class="text-xs font-bold mt-2.5 block"> Solar Panel Potential ${numStars} / 5</span>
                         <hr />
                         <p class="mb-0">${description}</p>
                     </div>
