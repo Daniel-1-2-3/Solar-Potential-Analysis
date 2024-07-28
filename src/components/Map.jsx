@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
 import star from '../assets/images/star.png';
 import half from '../assets/images/half.png';
 import '../assets/images/star.css'
+import { getCompletion } from './GPTDescription';
 
 const Map = () => {
     const [radiuskm, setRadiuskm] = useState(50);
@@ -85,14 +86,41 @@ const Map = () => {
             numStars = numStars > 5 ? 5 : numStars
             numStars = Math.round(numStars * 2) / 2 //this rounds decimals to either nearest whole number or .5
             console.log(numStars)
+            
+            const chatGPTDescription = async (numStars, clickedLocation) => {
+                return await getCompletion(numStars, clickedLocation)
+            }
 
+            const getClickLocation = async (latitude, longitude) => {
+                try {
+                    const apiKey = 'e05d15f41cad4b1bb27d91931d0bbfcb';
+                    const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`);
+                    const data = await response.json();
 
-            const description = 'ChatGPT asjkcbjksbdakjs dskjcbkdskj dsjksvbnksbdlk sdjvbcksda kjscajksdb'
+                    if (data.results.length > 0) {
+                        const components = data.results[0].components;
+                        const city = components.city || components.town || components.village || '';
+                        const state = components.state || '';
+                        const country = components.country || '';
+                        const locationName = `${city}${city && state ? ', ' : ''}${state}${(city || state) && country ? ', ' : ''}${country}`;
+                        return locationName;
+
+                    } else {
+                        console.log(`No location found for coordinates (${latitude}, ${longitude})`);
+                    }
+                } catch (error) {
+                    console.log(`Error: ${error}`);
+                }
+            }
+
+            
+            const clickedLocation = await getClickLocation(latitude, longitude)
+            const description = await chatGPTDescription(numStars, clickedLocation)
 
             newCircle.bindPopup(`
                 <div class="alert alert-primary d-flex align-items-center" role="alert">
                     <div class="alert alert-primary align-items: center;" role="alert">
-                        <h4>Title</h4>
+                        <h4>${clickedLocation}</h4>
                         <div class="alert-heading-1" >
                             ${Array.from({ length: Math.floor(numStars) }).map((_, i) => `<img src="${star}" alt="star" width="20" height="20" />`).join('')}
                             ${Array.from({ length: Math.round(numStars - Math.floor(numStars))}).map((_, i) => `<img src="${half}" alt="star" width="10" height="10" />`).join('')} 
@@ -111,7 +139,7 @@ const Map = () => {
         return () => {
             map.off('click', onMapClick);
         };
-    }, [map, currentMarker, currentCircle, radiuskm, loading, targetCoordinates]);
+    }, [map, currentMarker, currentCircle, radiuskm, loading]);
 
     // Update circle radius when radiuskm changes
     useEffect(() => {
@@ -141,22 +169,26 @@ const Map = () => {
 
     return (
         <div className='w-5/6 flex min-h-screen p-10 bg-indigo-900 rounded-3xl space-x-8'>
-            <div className="mb-12">
+            <div className="mb-12 mt-40">
                 <div>
                     <form onSubmit={locationSubmit}>
                         <label htmlFor="location" className="block font-bold mb-2 text-white text-center items-center">Search for a location:</label>
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            required    
-                        />
-                        <button type="submit">Get Coordinates</button>
+                        <div className='flex'>
+                            <input
+                                type="text"
+                                id="location"
+                                name="location"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                required
+                                className='w-full py-2 px-4 rounded-lg border border-gray-300 text-gray-900'
+                                placeholder='Enter location'
+                            />
+                            <button type="submit" className='ml-4 rounded-md py-1 px-2 bg-blue-700 text-white'>Go!</button>
+                        </div>
                     </form>
                 </div>
-                <div className="mb-12">
+                <div className="mb-12 mt-32">
                     <label htmlFor="type" className="block font-bold mb-2 text-white text-center items-center">Search Area Radius</label>
                     <select
                         id="type"
