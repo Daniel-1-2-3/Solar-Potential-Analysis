@@ -1,8 +1,40 @@
 import Map from '../components/Map'
 import Description from "../components/Description.jsx";
 import '../index.css'
+import './HomePage.css'
+import { useEffect, useRef } from 'react'
 
 const HomePage = () => {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const intervalRef = useRef(null);
+    const titleRef = useRef(null);
+
+    useEffect(() => {
+        const titleElement = titleRef.current;
+        let iteration = 0;
+
+        intervalRef.current = setInterval(() => {
+            titleElement.innerText = titleElement.dataset.value
+                .split("")
+                .map((letter, index) => {
+                    if (index < iteration) {
+                        return titleElement.dataset.value[index];
+                    }
+
+                    return letters[Math.floor(Math.random() * 26)];
+                })
+                .join("");
+
+            if (iteration >= titleElement.dataset.value.length) {
+                clearInterval(intervalRef.current);
+            }
+
+            iteration += 1 / 3;
+        }, 30);
+
+        return () => clearInterval(intervalRef.current); // Clean up on unmount
+    }, [letters]);
+
     return (
     <div className='max-h-screen flex flex-col overflow-y-auto bg-indigo-950'>
         {/* SVG shape divider */}
@@ -33,14 +65,40 @@ const HomePage = () => {
             </div>
         </div>
         {/* Main content */}
-        <div className='flex flex-col justify-center mt-auto items-center'>
-            <h1 className='flex flex-col mb-4 mt-3 text-7xl font-bold text-white my-4 text-center'>
-                Solar Potential Analysis
+        <div className='flex flex-col justify-center mt-10 items-center'>
+            <h1 ref={titleRef} className='title flex flex-col text-7xl font-bold text-white my-4 text-center ' id="bestTitle" data-value="SOLAR POTENTIAL ANALYSIS">
+                SOLAR POTENTIAL ANALYSIS
             </h1>
-            <Map />
-            
+            <div className='flex mt-5 w-full justify-center items-center'>
+                <Map />
+            </div>
         </div>
-        <Description/>
+        <section className="section blue" style={{ marginTop: '100px', padding: '20px', backgroundColor: '#1D1B4B', color: 'white' }}>
+            <div className="position-absolute z-50 md-20">
+                <Description />
+            </div>
+            <div className="curve" style={{ height: '100px', backgroundColor: '#1D1B4B' }}></div>
+        </section>
+
+        <section className="section" style={{ padding: '20px', backgroundColor: '#2a3b73', color: 'white' }}>
+            <div className='mt-20'></div>
+        </section>
+        <section className="section red" style={{ padding: '20px', backgroundColor: '#39509e' }}>
+          <div className='mt-44'>
+            <h1> </h1>
+          </div>
+          <p> </p>
+          <div className="wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+              <path
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                fill="#2a3b73"
+              ></path>
+            </svg>
+          </div>
+        </section>
+
+        <div className="spacer layer2 flip" style={{ height: '20px', backgroundColor: '#ddd' }}></div>
     </div>
   );
 };

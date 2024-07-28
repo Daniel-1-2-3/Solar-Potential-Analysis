@@ -5,9 +5,9 @@ export const getCompletion = async (numStars, location) => {
     if (numStars <= 2.5){
         rating = 'bad'
     } else if (numStars >= 3 && numStars < 4){
-        rating = 'mediocre'
-    } else if (numStars >= 4){
         rating = 'good'
+    } else if (numStars >= 4){
+        rating = 'great'
     }
     const prompt = `Why does this place, ${location}, have a ${rating} potential for electricity 
     production with solar panels? Give your answer in 1-2 sentences.`
