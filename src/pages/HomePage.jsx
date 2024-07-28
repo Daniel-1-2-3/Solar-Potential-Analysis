@@ -1,22 +1,7 @@
 import './HomePage.css'; // Import the CSS file for font and styles
 import Map from '../components/Map'
-import Popup from '../components/Popup'
 
 const HomePage = () => {
-    const blob = document.getElementById("blob");
-
-    window.onpointermove = event => { 
-        const { clientX, clientY } = event;
-
-        blob.style.left = `${clientX}px`;
-        blob.style.top = `${clientY}px`;
-        
-        blob.animate({
-            left: `${clientX}px`,
-            top: `${clientY}px`
-        }, { duration: 1500, fill: "forwards" });
-    }
-
     return (
     <div className='max-h-screen flex flex-col overflow-y-auto bg-indigo-950'>
         {/* SVG shape divider */}
@@ -50,7 +35,6 @@ const HomePage = () => {
         <div className='flex flex-col justify-center mt-auto items-center'>
             <h1 style={styles.title} className='flex flex-col mb-4 mt-3'>Solar Potential Analysis</h1>
             <Map />
-            <Popup />
         </div>
         <div id='blob'></div>
     </div>
