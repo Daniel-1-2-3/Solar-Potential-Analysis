@@ -12,6 +12,7 @@ const Map = () => {
     const [location, setLocation] = useState('');
     const [targetCoordinates, setTargetCoordinates] = useState([0, 0]); //coordinates for the country that you want to navigate to, through the sidebar button
     const [map, setMap] = useState(null);
+    const [currentMarker, setCurrentMarker] = useState(null);
     const [currentCircle, setCurrentCircle] = useState(null);
     const cursorCircle = useRef(null);
     const [scale, setScale] = useState(2)
@@ -49,12 +50,16 @@ const Map = () => {
                 return
             }
 
-            if (currentCircle) {
+            if (currentMarker && currentCircle) {
+                currentMarker.remove();
                 currentCircle.remove();
             }
 
             const latitude = e.latlng.lat;
             const longitude = e.latlng.lng;
+
+            const newMarker = L.marker([latitude, longitude]).addTo(map);
+            setCurrentMarker(newMarker);
 
             const radiusPx = radiuskm * 1000; //convert km to px
             const newCircle = L.circle([latitude, longitude], {
@@ -69,7 +74,7 @@ const Map = () => {
             console.log(latitude, longitude)
             //send the latitude and longitude to python backend for processing 
             setLoading(true); //disable clicking on other spots while processing the python api request
-            const response = await fetch('https://Daneel.pythonanywhere.com/process_coordinates', {
+            const response = await fetch('http://localhost:3500/process_coordinates', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -122,7 +127,12 @@ const Map = () => {
             }
             
             const clickedLocation = await getClickLocation(latitude, longitude)
-            const description = await chatGPTDescription(numStars, clickedLocation) 
+            let description;
+            try {
+                description = await chatGPTDescription(numStars, clickedLocation) 
+            } catch {
+                description = 'API key invalid or outdated'
+            }
 
             newCircle.bindPopup(`
                 <div class="alert alert-primary d-flex align-items-center" role="alert">
@@ -187,7 +197,7 @@ const Map = () => {
             map.off('mousemove', checkCursorPosition)
         };
 
-    }, [map, currentCircle, radiuskm, loading]);
+    }, [map, currentMarker, currentCircle, radiuskm, loading]);
 
     //update circle radius when radiuskm changes
     useEffect(() => {

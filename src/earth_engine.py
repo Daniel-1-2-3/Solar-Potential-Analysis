@@ -27,22 +27,6 @@ class CoordinatesReq(BaseModel):
     longitude: str
     radius: str
 
-def average_red_channel(pixel_values):
-    red_values = [pixel_values[i] for i in range(0, len(pixel_values), 3)]
-    if red_values:
-        return sum(red_values) / len(red_values)
-    return 0
-
-def download_image(url):
-    response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
-    return img
-
-def extract_pixel_values(img):
-    img = np.array(img)
-    pixel_values = img.flatten().tolist()
-    return pixel_values
-
 def find_solar_irrandiance(longitude, latitude, radius):
     #define the area of interest, based on radius of circle and center (latitude, longitude)
     center = ee.Geometry.Point([longitude, latitude])
