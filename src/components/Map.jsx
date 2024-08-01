@@ -130,8 +130,8 @@ const Map = () => {
             let description;
             try {
                 description = await chatGPTDescription(numStars, clickedLocation) 
-            } catch {
-                description = 'API key invalid or outdated'
+            } catch (e) {
+                description = `${e}`
             }
 
             newCircle.bindPopup(`
